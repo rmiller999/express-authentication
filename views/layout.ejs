@@ -10,7 +10,10 @@
   </head>
   <body>
     <div class="container">
+      <a href="/">Home</a>
       <h1>Authentication</h1>
+      <%- JSON.stringify(currentUser) %>
+      <% include ./partials/alerts %>
       <%- body %>
     </div>
 

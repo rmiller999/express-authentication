@@ -1,8 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 const ejsLayouts = require('express-ejs-layouts');
+// Module allows use of sessions
 const session = require('express-session');
+// Imports passport locl strategy
 const passport = require('./config/passportConfig');
+// module for flash messages
+const flash = require('connect-flash');
+const isLoggedIn = require('./middleware/isLoggedIn');
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -19,16 +24,25 @@ app.use(session({
   saveUninitialized: true
 }));
 
+// Starts the flash middleware
+app.use(flash());
+
 // Link passport to the express session
 // MUST BE BELOW SESSION
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(function(req, res, next) {
+  res.locals.alerts = req.flash();
+  res.locals.currentUser = req.user;
+  next();
+});
+
 app.get('/', function(req, res) {
   res.render('index');
 });
 
-app.get('/profile', function(req, res) {
+app.get('/profile', isLoggedIn, function(req, res) {
   res.render('profile');
 });
 
